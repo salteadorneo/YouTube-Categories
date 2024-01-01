@@ -203,23 +203,10 @@ async function extractInfo (video) {
   metaElement.classList.add('meta')
   containerElement.appendChild(metaElement)
 
-  const select = document.createElement('select')
+  const select = await globalThis.createSelectCategory()
 
-  const option = document.createElement('option')
-  select.appendChild(option)
-
-  const categories = await globalThis.getCategories()
-  if (categories) {
-    Object.keys(categories).forEach((category) => {
-      const option = document.createElement('option')
-      option.value = category
-      option.textContent = category
-      select.appendChild(option)
-    })
-    // get category
-    const category = await getCategoryChannel(channel)
-    select.value = category || ''
-  }
+  const category = await getCategoryChannel(channel)
+  select.value = category || ''
 
   select.addEventListener('change', (event) => {
     const category = event.target.value

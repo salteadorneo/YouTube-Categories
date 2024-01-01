@@ -1,4 +1,8 @@
 {
+    "default_categories": {
+        "message": "Music,News,Podcasts,Sports,Gaming",
+        "description": "Default categories"
+    },
     "uncategorized": {
         "message": "Uncategorized",
         "description": "Default category for uncategorized channels"

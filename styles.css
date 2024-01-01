@@ -57,6 +57,7 @@
 
     .chips {
         display: flex;
+        flex-wrap: wrap;
         margin: 12px 0;
         gap: 12px;
 
@@ -93,6 +94,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: 12px;
         margin: 0 24px;
         padding-top: 24px;
 
@@ -130,6 +132,7 @@
         border: none;
         background-color: transparent;
         cursor: pointer;
+        white-space: nowrap;
     }
 
     .button:hover {

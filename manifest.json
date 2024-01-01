@@ -7,6 +7,9 @@
     "permissions": [
         "storage"
     ],
+    "background": {
+        "service_worker": "background.js"
+    },
     "content_scripts": [
         {
             "matches": [
@@ -16,6 +19,7 @@
                 "styles.css"
             ],
             "js": [
+                "utils.js",
                 "storage.js",
                 "subscriptions.js"
             ]
