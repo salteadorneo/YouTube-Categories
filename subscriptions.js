@@ -125,7 +125,7 @@ function createCategorySection ({ name, channels = [], canDelete }) {
   if (canDelete) {
     const button = document.createElement('button')
     button.classList.add('button')
-    button.textContent = 'Remove'
+    button.textContent = globalThis.chrome.i18n.getMessage('delete_category')
     button.addEventListener('click', () => {
       if (!window.confirm(globalThis.chrome.i18n.getMessage('are_you_sure'))) return
       removeCategory(name)

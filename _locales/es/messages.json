@@ -18,5 +18,9 @@
     "are_you_sure": {
         "message": "¿Estás seguro?",
         "description": "Confirmation dialog title"
+    },
+    "delete_category": {
+        "message": "Eliminar categoría",
+        "description": "Button to remove a category"
     }
 }

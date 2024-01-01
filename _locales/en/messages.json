@@ -18,5 +18,9 @@
     "are_you_sure": {
         "message": "Are you sure?",
         "description": "Confirmation dialog title"
+    },
+    "delete_category": {
+        "message": "Remove category",
+        "description": "Button to remove a category"
     }
 }
