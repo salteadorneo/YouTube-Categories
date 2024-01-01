@@ -1,0 +1,22 @@
+{
+    "uncategorized": {
+        "message": "Uncategorized",
+        "description": "Default category for uncategorized channels"
+    },
+    "add_category": {
+        "message": "Add category",
+        "description": "Button to add a new category"
+    },
+    "no_recent_videos": {
+        "message": "No recent videos",
+        "description": "Message shown when there are no recent videos"
+    },
+    "no_channels": {
+        "message": "No channels",
+        "description": "Message shown when there are no channels"
+    },
+    "are_you_sure": {
+        "message": "Are you sure?",
+        "description": "Confirmation dialog title"
+    }
+}

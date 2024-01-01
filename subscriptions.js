@@ -1,4 +1,4 @@
-const UNCATEGORIZED = 'Uncategorized'
+const UNCATEGORIZED = globalThis.chrome.i18n.getMessage('uncategorized')
 
 let interval
 async function init () {
@@ -30,9 +30,9 @@ async function init () {
 
   const button = document.createElement('button')
   button.classList.add('button')
-  button.textContent = 'Add category'
+  button.textContent = globalThis.chrome.i18n.getMessage('add_category')
   button.addEventListener('click', () => {
-    const name = window.prompt('Name new category')
+    const name = window.prompt(globalThis.chrome.i18n.getMessage('add_category'))
     if (!name) return
     createCategory({ name })
   })
@@ -118,14 +118,16 @@ function createCategorySection ({ name, channels = [], canDelete }) {
 
   const emptyDiv = document.createElement('p')
   emptyDiv.classList.add('empty')
-  emptyDiv.innerHTML = channels.length > 0 ? 'No recent videos' : 'No channels'
+  emptyDiv.innerHTML = channels.length > 0
+    ? globalThis.chrome.i18n.getMessage('no_recent_videos')
+    : globalThis.chrome.i18n.getMessage('no_channels')
 
   if (canDelete) {
     const button = document.createElement('button')
     button.classList.add('button')
     button.textContent = 'Remove'
     button.addEventListener('click', () => {
-      if (!window.confirm(`Remove category ${name}?`)) return
+      if (!window.confirm(globalThis.chrome.i18n.getMessage('are_you_sure'))) return
       removeCategory(name)
     })
     emptyDiv.appendChild(button)
