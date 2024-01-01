@@ -1,0 +1,18 @@
+{
+    "manifest_version": 3,
+    "name": "YouTube Categories",
+    "version": "1.0",
+    "permissions": [
+        "storage"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "*://*.youtube.com/feed/subscriptions"
+            ],
+            "js": [
+                "main.js"
+            ]
+        }
+    ]
+}

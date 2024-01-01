@@ -1,0 +1,23 @@
+{
+  "name": "youtube-categories",
+  "version": "1.0.0",
+  "description": "Chrome extension to categorize your YouTube subscriptions",
+  "main": "main.js",
+  "scripts": {},
+  "keywords": [
+    "youtube",
+    "chrome",
+    "extension",
+    "categories"
+  ],
+  "author": "salteadorneodev",
+  "license": "ISC",
+  "devDependencies": {
+    "standard": "17.1.0"
+  },
+  "eslintConfig": {
+    "extends": [
+      "./node_modules/standard/eslintrc.json"
+    ]
+  }
+}
