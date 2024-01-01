@@ -1,195 +1,3 @@
-const style = document.createElement('style')
-style.textContent = `
-#yt-categories {
-  width: 100%;
-  &.loading{
-    opacity: .5;
-    pointer-events: none;
-  }
-  * {
-    font-family: "Roboto","Arial",sans-serif;
-  }
-  .hidden {
-    display: none !important;
-  }
-  .flex {
-    display: flex;
-  }
-  .grid {
-    display: grid;
-    gap: 16px;
-  }
-  .grid-cols-1 {
-    grid-template-columns: repeat(1, 1fr);
-  }
-  .grid-cols-2 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .grid-cols-3 {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .grid-cols-4 {
-    grid-template-columns: repeat(4, 1fr);
-  }
-  .grid-cols-5 {
-    grid-template-columns: repeat(5, 1fr);
-  }
-  .grid-cols-6 {
-    grid-template-columns: repeat(6, 1fr);
-  }
-  .grid-cols-7 {
-    grid-template-columns: repeat(7, 1fr);
-  }
-  .grid-cols-8 {
-    grid-template-columns: repeat(8, 1fr);
-  }
-  .chips {
-    display: flex;
-    margin: 12px 0;
-    gap: 12px;
-
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      font-family: "Roboto","Arial",sans-serif;
-      font-size: 1.4rem;
-      line-height: 2rem;
-      font-weight: 500;
-      border-radius: 8px;
-      height: 32px;
-      min-width: 12px;
-      background-color: var(--yt-spec-badge-chip-background);
-      color: var(--yt-spec-text-primary);
-      padding: 0 var(--ytd-margin-3x);
-      transition: background-color .5s cubic-bezier(.05,0,0,1);
-      cursor: pointer;
-      border: none;
-      outline: none;
-
-      &:hover {
-        background-color: var(--yt-spec-button-chip-background-hover);
-      }
-
-      &.active {
-        background-color: var(--yt-spec-text-primary);
-        color: var(--yt-spec-text-primary-inverse);
-      }
-    }
-  }
-  .category {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin: 0 24px;
-    padding-top: 24px;
-
-    > .title {
-      font-size: 2rem;
-      line-height: 2.8rem;
-      font-weight: 700;
-      color: var(--yt-spec-text-primary);
-      padding: 20px 0;
-    }
-
-    .empty {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      width: 100%;
-      font-size: 1.6rem;
-      line-height: 2.2rem;
-      font-weight: 400;
-      color: var(--ytd-metadata-line-color,var(--yt-spec-text-secondary));
-    }
-  }
-  .button {
-    font-size: 14px;
-    line-height: 36px;
-    font-weight: 500;
-    border-radius: 18px;
-    color: #065fd4;
-    padding: 0 16px;
-    height: 36px;
-    appearance: none;
-    outline: none;
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
-  }
-  .button:hover {
-    background-color: #def1ff;
-  }
-  .video {
-    .flex {
-      margin-top: 12px;
-      gap: 12px;
-    }
-    img {
-      object-fit: cover;
-      width: 100%;
-      aspect-ratio: 16/9;
-      border-radius: 16px;
-    }
-    .avatar {
-      object-fit: cover;
-      border-radius: 100%;
-      width: 36px;
-      height: 36px;
-      background: #eee;
-    }
-    a {
-      text-decoration: none;
-    }
-    .title {
-      color: var(--yt-spec-text-primary);
-      font-size: 1.6rem;
-      line-height: 2.2rem;
-      font-weight: 500;
-    }
-    .channel {
-      font-size: 1.4rem;
-      line-height: 2rem;
-      color: var(--ytd-metadata-line-color,var(--yt-spec-text-secondary));
-
-      &:hover {
-        color: var(--yt-spec-text-primary);
-      }
-    }
-    .meta {
-      font-size: 1.4rem;
-      line-height: 2rem;
-      font-weight: 400;
-      color: var(--ytd-metadata-line-color,var(--yt-spec-text-secondary));
-    }
-    select {
-      border-radius: 16px;
-      padding: 4px 6px;
-      border: 1px solid var(--ytd-metadata-line-color,var(--yt-spec-text-secondary));
-      background: transparent;
-      color: var(--ytd-metadata-line-color,var(--yt-spec-text-secondary));
-      margin-top: 6px;
-
-      option {
-        background: transparent;
-        color: var(--ytd-metadata-line-color,var(--yt-spec-text-secondary));
-      }
-    }
-  }
-}
-html[dark] {
-  #yt-categories {
-    .button {
-      color: #3ea6ff;
-
-      &:hover {
-        background-color: #263850;
-      }
-    }
-  }
-}
-`
-
 const UNCATEGORIZED = 'Uncategorized'
 
 let interval
@@ -210,9 +18,6 @@ async function init () {
   }
   $container.innerHTML = ''
 
-  // css
-  $container.prepend(style)
-
   const titleCategories = document.createElement('div')
   titleCategories.classList.add('category')
 
@@ -229,16 +34,15 @@ async function init () {
   button.addEventListener('click', () => {
     const name = window.prompt('Name new category')
     if (!name) return
-    setSelectedCategory(name)
     createCategory({ name })
   })
   containerElement.appendChild(button)
 
   $container.appendChild(titleCategories)
 
-  const selectedCategory = await getSelectedCategory()
+  const selectedCategory = await globalThis.getSelectedCategory()
 
-  const categories = await getCategories()
+  const categories = await globalThis.getCategories()
   if (categories) {
     Object.keys(categories).forEach((name) => {
       createCategorySection({ name, channels: categories[name], canDelete: true })
@@ -402,7 +206,7 @@ async function extractInfo (video) {
   const option = document.createElement('option')
   select.appendChild(option)
 
-  const categories = await getCategories()
+  const categories = await globalThis.getCategories()
   if (categories) {
     Object.keys(categories).forEach((category) => {
       const option = document.createElement('option')
@@ -425,22 +229,23 @@ async function extractInfo (video) {
 }
 
 async function createCategory ({ name }) {
-  const categories = await getCategories()
+  const categories = await globalThis.getCategories()
   categories[name] = []
-  setCategories(categories)
+  await globalThis.setSelectedCategory(name)
+  await globalThis.setCategories(categories)
 }
 
 async function removeCategory (name) {
-  const categories = await getCategories()
+  const categories = await globalThis.getCategories()
   delete categories[name]
-  setCategories(categories)
+  globalThis.setCategories(categories)
 }
 
 async function setChannelToCategory ({ channel, category }) {
   const $container = document.querySelector('#yt-categories')
   $container.classList.add('loading')
 
-  const categories = await getCategories()
+  const categories = await globalThis.getCategories()
 
   // remove from other categories
   Object.keys(categories).forEach((categoryName) => {
@@ -448,17 +253,17 @@ async function setChannelToCategory ({ channel, category }) {
   })
 
   if (!category) {
-    setCategories(categories)
+    globalThis.setCategories(categories)
     return
   }
 
   categories[category] = categories[category] || []
   categories[category].push(channel)
-  setCategories(categories)
+  globalThis.setCategories(categories)
 }
 
 async function getCategoryChannel (channel) {
-  const categories = await getCategories()
+  const categories = await globalThis.getCategories()
   return Object.keys(categories).find((category) => {
     return categories[category].includes(channel)
   })
@@ -466,6 +271,8 @@ async function getCategoryChannel (channel) {
 
 async function handleClickChip (sender) {
   if (!sender) return
+
+  const isActive = sender.classList.contains('active')
 
   const $container = document.querySelector('#yt-categories')
 
@@ -478,9 +285,9 @@ async function handleClickChip (sender) {
     chip.classList.remove('active')
   })
 
-  const selectedCategory = await getSelectedCategory()
-  if (selectedCategory === sender.textContent) {
-    setSelectedCategory(null)
+  const selectedCategory = await globalThis.getSelectedCategory()
+  if (selectedCategory === sender.textContent && isActive) {
+    globalThis.setSelectedCategory(null)
     $container.classList.remove('loading')
     return
   }
@@ -489,35 +296,15 @@ async function handleClickChip (sender) {
   section.classList.toggle('hidden')
   sender.classList.toggle('active')
 
-  setSelectedCategory(sender.textContent)
+  globalThis.setSelectedCategory(sender.textContent)
 
   $container.classList.remove('loading')
 }
 
-init()
-
 // document.addEventListener('yt-navigate-start', init)
-
-// STORAGE
 
 globalThis.chrome.storage.onChanged.addListener((changes) => {
   if (changes.categories) init()
 })
 
-function setCategories (categories) {
-  globalThis.chrome.storage.sync.set({ categories })
-}
-
-async function getCategories () {
-  const storage = await globalThis.chrome.storage.sync.get('categories')
-  return storage?.categories || {}
-}
-
-function setSelectedCategory (name) {
-  globalThis.chrome.storage.local.set({ selectedCategory: name })
-}
-
-async function getSelectedCategory () {
-  const storage = await globalThis.chrome.storage.local.get('selectedCategory')
-  return storage?.selectedCategory
-}
+init()

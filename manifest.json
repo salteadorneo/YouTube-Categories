@@ -10,8 +10,12 @@
             "matches": [
                 "*://*.youtube.com/feed/subscriptions"
             ],
+            "css": [
+                "styles.css"
+            ],
             "js": [
-                "main.js"
+                "storage.js",
+                "subscriptions.js"
             ]
         }
     ]
