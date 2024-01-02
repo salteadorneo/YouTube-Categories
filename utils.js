@@ -32,3 +32,31 @@ globalThis.removeCategory = async (name) => {
   await globalThis.setSelectedCategory(null)
   await globalThis.setCategories(categories)
 }
+
+globalThis.getCategoryChannel = async (channel) => {
+  const categories = await globalThis.getCategories()
+  return Object.keys(categories).find((category) => {
+    return categories[category].includes(channel)
+  })
+}
+
+globalThis.setChannelToCategory = async ({ channel, category }) => {
+  const $container = document.querySelector('#yt-categories')
+  $container.classList.add('loading')
+
+  const categories = await globalThis.getCategories()
+
+  // remove from other categories
+  Object.keys(categories).forEach((categoryName) => {
+    categories[categoryName] = categories[categoryName].filter((item) => item !== channel)
+  })
+
+  if (!category) {
+    await globalThis.setCategories(categories)
+    return
+  }
+
+  categories[category] = categories[category] || []
+  categories[category].push(channel)
+  await globalThis.setCategories(categories)
+}

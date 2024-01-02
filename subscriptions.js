@@ -69,7 +69,7 @@ async function init () {
 
         const videoElement = await extractInfo(video)
 
-        const category = await getCategoryChannel(channelName)
+        const category = await globalThis.getCategoryChannel(channelName)
 
         const section = category
           ? $container.querySelector(`[data-category-name="${category}"]`)
@@ -198,44 +198,16 @@ async function extractInfo (video) {
 
   const select = await globalThis.createSelectCategory()
 
-  const category = await getCategoryChannel(channel)
+  const category = await globalThis.getCategoryChannel(channel)
   select.value = category || ''
 
   select.addEventListener('change', (event) => {
     const category = event.target.value
-    setChannelToCategory({ channel, category })
+    globalThis.setChannelToCategory({ channel, category })
   })
   containerElement.appendChild(select)
 
   return videoElement
-}
-
-async function setChannelToCategory ({ channel, category }) {
-  const $container = document.querySelector('#yt-categories')
-  $container.classList.add('loading')
-
-  const categories = await globalThis.getCategories()
-
-  // remove from other categories
-  Object.keys(categories).forEach((categoryName) => {
-    categories[categoryName] = categories[categoryName].filter((item) => item !== channel)
-  })
-
-  if (!category) {
-    await globalThis.setCategories(categories)
-    return
-  }
-
-  categories[category] = categories[category] || []
-  categories[category].push(channel)
-  await globalThis.setCategories(categories)
-}
-
-async function getCategoryChannel (channel) {
-  const categories = await globalThis.getCategories()
-  return Object.keys(categories).find((category) => {
-    return categories[category].includes(channel)
-  })
 }
 
 async function handleClickChip (sender) {
