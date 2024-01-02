@@ -34,45 +34,23 @@ async function init () {
   button.addEventListener('click', () => {
     const name = window.prompt(globalThis.chrome.i18n.getMessage('add_category'))
     if (!name) return
-    createCategory({ name })
+    globalThis.createCategory({ name })
   })
   containerElement.appendChild(button)
 
   $container.appendChild(titleCategories)
 
-  const selectedCategory = await globalThis.getSelectedCategory()
-
   const categories = await globalThis.getCategories()
   if (categories) {
     Object.keys(categories).forEach((name) => {
-      createCategorySection({ name, channels: categories[name], canDelete: true })
-
-      const chipButton = document.createElement('button')
-      chipButton.classList.add('chip')
-      chipButton.textContent = name
-      chipButton.addEventListener('click', () => {
-        handleClickChip(chipButton)
+      createCategorySection({
+        name,
+        channels: categories[name],
+        canDelete: true
       })
-      chips.appendChild(chipButton)
-
-      if (name === selectedCategory) {
-        handleClickChip(chipButton)
-      }
     })
   }
-  createCategorySection({ name: UNCATEGORIZED, canDelete: false })
-
-  const chipButton = document.createElement('button')
-  chipButton.classList.add('chip')
-  chipButton.textContent = UNCATEGORIZED
-  chipButton.addEventListener('click', () => {
-    handleClickChip(chipButton)
-  })
-  chips.appendChild(chipButton)
-
-  if (UNCATEGORIZED === selectedCategory) {
-    handleClickChip(chipButton)
-  }
+  createCategorySection({ name: UNCATEGORIZED })
 
   if (interval) clearInterval(interval)
   interval = setInterval(async () => {
@@ -107,7 +85,7 @@ async function init () {
   }, 1000)
 }
 
-function createCategorySection ({ name, channels = [], canDelete }) {
+async function createCategorySection ({ name, channels = [], canDelete = false }) {
   const $container = document.querySelector('#yt-categories')
 
   if ($container.querySelector(`[data-category-name="${name}"]`)) return
@@ -128,7 +106,7 @@ function createCategorySection ({ name, channels = [], canDelete }) {
     button.textContent = globalThis.chrome.i18n.getMessage('delete_category')
     button.addEventListener('click', () => {
       if (!window.confirm(globalThis.chrome.i18n.getMessage('are_you_sure'))) return
-      removeCategory(name)
+      globalThis.removeCategory(name)
     })
     emptyDiv.appendChild(button)
   }
@@ -142,6 +120,21 @@ function createCategorySection ({ name, channels = [], canDelete }) {
   section.appendChild(div)
 
   $container.append(section)
+
+  const chips = $container.querySelector('.chips')
+
+  const chipButton = document.createElement('button')
+  chipButton.classList.add('chip')
+  chipButton.textContent = name
+  chipButton.addEventListener('click', () => {
+    handleClickChip(chipButton)
+  })
+  chips.appendChild(chipButton)
+
+  const selectedCategory = await globalThis.getSelectedCategory()
+  if (name === selectedCategory) {
+    handleClickChip(chipButton)
+  }
 }
 
 async function extractInfo (video) {
@@ -217,19 +210,6 @@ async function extractInfo (video) {
   return videoElement
 }
 
-async function createCategory ({ name }) {
-  const categories = await globalThis.getCategories()
-  categories[name] = []
-  await globalThis.setSelectedCategory(name)
-  await globalThis.setCategories(categories)
-}
-
-async function removeCategory (name) {
-  const categories = await globalThis.getCategories()
-  delete categories[name]
-  globalThis.setCategories(categories)
-}
-
 async function setChannelToCategory ({ channel, category }) {
   const $container = document.querySelector('#yt-categories')
   $container.classList.add('loading')
@@ -242,13 +222,13 @@ async function setChannelToCategory ({ channel, category }) {
   })
 
   if (!category) {
-    globalThis.setCategories(categories)
+    await globalThis.setCategories(categories)
     return
   }
 
   categories[category] = categories[category] || []
   categories[category].push(channel)
-  globalThis.setCategories(categories)
+  await globalThis.setCategories(categories)
 }
 
 async function getCategoryChannel (channel) {

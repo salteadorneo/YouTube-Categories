@@ -18,3 +18,17 @@ globalThis.createSelectCategory = async () => {
 
   return select
 }
+
+globalThis.createCategory = async ({ name }) => {
+  const categories = await globalThis.getCategories()
+  categories[name] = []
+  await globalThis.setSelectedCategory(name)
+  await globalThis.setCategories(categories)
+}
+
+globalThis.removeCategory = async (name) => {
+  const categories = await globalThis.getCategories()
+  delete categories[name]
+  await globalThis.setSelectedCategory(null)
+  await globalThis.setCategories(categories)
+}
