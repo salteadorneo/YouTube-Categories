@@ -4,6 +4,5 @@ globalThis.chrome.runtime.onInstalled.addListener(function (details) {
     globalThis.chrome.storage.sync.set({
       categories: DEFAULT_CATEGORIES.map((name) => ({ [name]: [] })).reduce((acc, cur) => ({ ...acc, ...cur }), {})
     })
-    console.log(DEFAULT_CATEGORIES.map((name) => ({ [name]: [] })).reduce((acc, cur) => ({ ...acc, ...cur }), {}))
   }
 })

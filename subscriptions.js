@@ -71,6 +71,12 @@ async function init () {
 
         const category = await globalThis.getCategoryChannel(channelName)
 
+        if (!video.querySelector('.yt-categories-category-select')) {
+          const select = await globalThis.createSelectCategory(channelName)
+          select.value = category || ''
+          video.querySelector('#meta').appendChild(select)
+        }
+
         const section = category
           ? $container.querySelector(`[data-category-name="${category}"]`)
           : $container.querySelector(`[data-category-name="${UNCATEGORIZED}"]`)
@@ -196,15 +202,10 @@ async function extractInfo (video) {
   metaElement.classList.add('meta')
   containerElement.appendChild(metaElement)
 
-  const select = await globalThis.createSelectCategory()
+  const select = await globalThis.createSelectCategory(channel)
 
   const category = await globalThis.getCategoryChannel(channel)
   select.value = category || ''
-
-  select.addEventListener('change', (event) => {
-    const category = event.target.value
-    globalThis.setChannelToCategory({ channel, category })
-  })
   containerElement.appendChild(select)
 
   return videoElement

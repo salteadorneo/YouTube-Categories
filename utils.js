@@ -1,5 +1,6 @@
-globalThis.createSelectCategory = async () => {
+globalThis.createSelectCategory = async (channel) => {
   const select = document.createElement('select')
+  select.classList.add('yt-categories-category-select')
 
   const option = document.createElement('option')
   option.value = ''
@@ -15,6 +16,12 @@ globalThis.createSelectCategory = async () => {
       select.appendChild(option)
     })
   }
+
+  select.onclick = (event) => event.stopPropagation()
+  select.addEventListener('change', (event) => {
+    const category = event.target.value
+    globalThis.setChannelToCategory({ channel, category })
+  })
 
   return select
 }
