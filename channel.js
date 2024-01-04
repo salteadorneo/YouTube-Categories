@@ -1,6 +1,12 @@
 document.addEventListener('yt-navigate-finish', async () => {
   console.log('yt-navigate-finish', window.location.pathname)
 
+  printSelectOnChannel()
+})
+
+printSelectOnChannel()
+
+function printSelectOnChannel () {
   document.querySelectorAll('ytd-browse[page-subtype=channels]').forEach(async ($page) => {
     const channelName = $page.querySelector('#channel-handle')?.textContent
     if (!channelName) return
@@ -37,6 +43,6 @@ document.addEventListener('yt-navigate-finish', async () => {
     }
     $select.appendChild($option)
 
-    $page.querySelector('#inner-header-container #buttons').appendChild($select)
+    $page.querySelector('#inner-header-container #buttons')?.appendChild($select)
   })
-})
+}
