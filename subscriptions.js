@@ -5,6 +5,7 @@ async function createHeader ($page) {
 
   const containerHeader = document.createElement('div')
   containerHeader.classList.add('yt-categories-header')
+  $page.querySelector('#header').appendChild(containerHeader)
 
   const chips = document.createElement('section')
   chips.classList.add('chips')
@@ -21,22 +22,22 @@ async function createHeader ($page) {
     })
   }
 
-  containerHeader.appendChild(chips)
+  // chip for create new category
+  const newChip = document.createElement('button')
+  newChip.classList.add('chip', 'new_category')
 
-  const containerElement = document.createElement('div')
-  containerHeader.appendChild(containerElement)
-
-  const button = document.createElement('button')
-  button.classList.add('yt-categories-button')
-  button.textContent = globalThis.chrome.i18n.getMessage('add_category')
-  button.addEventListener('click', () => {
+  newChip.textContent = '+'
+  newChip.addEventListener('click', () => {
     const name = window.prompt(globalThis.chrome.i18n.getMessage('add_category'))
     if (!name) return
     globalThis.createCategory({ name })
   })
-  containerElement.appendChild(button)
+  chips.appendChild(newChip)
 
-  $page.querySelector('#header').appendChild(containerHeader)
+  containerHeader.appendChild(chips)
+
+  const containerElement = document.createElement('div')
+  containerHeader.appendChild(containerElement)
 }
 
 async function createVideosContainer ($page) {
@@ -47,7 +48,7 @@ async function createVideosContainer ($page) {
   containerVideos.id = 'yt-categories-videos'
 
   const itemsPerRow = $page.querySelector('ytd-rich-grid-row > div')?.childElementCount
-  containerVideos.classList.value = `grid-cols-${itemsPerRow || 4}`
+  containerVideos.classList.value = `grid grid-cols-${itemsPerRow || 4}`
 
   let $contents = $page.querySelector('#contents')
   while (!$contents) {
@@ -82,15 +83,16 @@ globalThis.chrome.storage.onChanged.addListener((changes) => {
   if (changes.selectedCategory) {
     filterVideos()
   }
-})
-
-document.addEventListener('yt-navigate-finish', async () => {
-  if (window.location.pathname === '/feed/subscriptions') {
-    init()
+  if (changes.categories) {
+    if (Object.keys(changes.categories.newValue).length !== Object.keys(changes.categories.oldValue).length) {
+      init()
+    }
   }
 })
 
-document.addEventListener('DOMContentLoaded', async () => {
+init()
+
+document.addEventListener('yt-navigate-finish', () => {
   if (window.location.pathname === '/feed/subscriptions') {
     init()
   }
@@ -114,8 +116,9 @@ async function init () {
 window.addEventListener('resize', () => {
   setTimeout(() => {
     const $containerVideos = document.querySelector('#yt-categories-videos')
+    if (!$containerVideos) return
     const itemsPerRow = document.querySelector('ytd-rich-grid-row > div')?.childElementCount
-    $containerVideos.classList.value = `grid-cols-${itemsPerRow || 4}`
+    $containerVideos.classList.value = `grid grid-cols-${itemsPerRow || 4}`
   }, 300)
 })
 
@@ -125,13 +128,14 @@ async function filterVideos () {
   const $containerVideos = document.querySelector('#yt-categories-videos')
   $containerVideos.innerHTML = ''
 
+  const itemsPerRow = document.querySelector('ytd-rich-grid-row > div')?.childElementCount
+  $containerVideos.classList.value = `grid grid-cols-${itemsPerRow || 4}`
+
   const channels = await globalThis.getChannelsCategory(selectedCategory)
 
   if (channels.length === 0 && selectedCategory) {
-    const $noVideos = document.createElement('p')
-    $noVideos.textContent = globalThis.chrome.i18n.getMessage('no_channels')
-    $noVideos.classList.add('empty')
-    $containerVideos.appendChild($noVideos)
+    $containerVideos.classList.value = ''
+    $containerVideos.appendChild(emptyHtml())
   }
 
   const $videos = document.querySelectorAll('ytd-rich-item-renderer')
@@ -150,6 +154,35 @@ async function filterVideos () {
       }
     })
   }
+}
+
+function emptyHtml () {
+  const container = document.createElement('div')
+  container.classList.add('empty')
+
+  const p = document.createElement('p')
+  p.textContent = globalThis.chrome.i18n.getMessage('no_channels')
+  container.appendChild(p)
+
+  const manageButton = document.createElement('a')
+  manageButton.href = 'https://www.youtube.com/feed/channels'
+  manageButton.classList.add('yt-categories-button')
+  manageButton.textContent = globalThis.chrome.i18n.getMessage('manage')
+  container.appendChild(manageButton)
+
+  const removeButton = document.createElement('button')
+  removeButton.classList.add('yt-categories-button')
+  removeButton.textContent = globalThis.chrome.i18n.getMessage('delete_category')
+  removeButton.addEventListener('click', async () => {
+    const selectedCategory = await globalThis.getSelectedCategory()
+    const confirm = window.confirm(globalThis.chrome.i18n.getMessage('are_you_sure', [selectedCategory]))
+    if (!confirm) return
+
+    globalThis.removeCategory(selectedCategory)
+  })
+  container.appendChild(removeButton)
+
+  return container
 }
 
 async function extractInfo (video) {

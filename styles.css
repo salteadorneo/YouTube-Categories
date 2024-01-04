@@ -12,26 +12,6 @@
     gap: 12px;
     margin: 0 24px;
 
-    &>.title {
-        font-size: 2rem;
-        line-height: 2.8rem;
-        font-weight: 700;
-        color: var(--yt-spec-text-primary);
-        padding: 20px 0;
-    }
-
-    & .empty {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        width: 100%;
-        font-size: 1.6rem;
-        line-height: 2.2rem;
-        font-weight: 400;
-        color: var(--ytd-metadata-line-color, var(--yt-spec-text-secondary));
-    }
-
     & .chips {
         display: flex;
         flex-wrap: wrap;
@@ -83,6 +63,7 @@
     background-color: transparent;
     cursor: pointer;
     white-space: nowrap;
+    text-decoration: none;
 
     &:hover {
         background-color: #def1ff;
@@ -92,14 +73,17 @@
 #yt-categories-videos {
     font-family: "Roboto", "Arial", sans-serif;
     max-width: calc(var(--ytd-rich-grid-content-max-width) + var(--ytd-rich-grid-item-margin));
-    display: grid;
     gap: 16px;
-    min-height: 325px;
+    min-height: 356px;
     padding-top: 24px;
     margin: 0 24px;
 
     & .flex {
         display: flex;
+    }
+
+    &.grid {
+        display: grid;
     }
 
     &.grid-cols-1 {
@@ -126,7 +110,26 @@
         grid-template-columns: repeat(6, 1fr);
     }
 
+    & .empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+
+        & p {
+            font-family: "Roboto", "Arial", sans-serif;
+            font-size: 1.4rem;
+            line-height: 2rem;
+            font-weight: 400;
+            color: var(--ytd-metadata-line-color, var(--yt-spec-text-secondary));
+            text-align: center;
+        }
+    }
+
     & .video {
+        margin-bottom: 40px;
+
         .flex {
             margin-top: 12px;
             gap: 12px;
@@ -180,9 +183,9 @@
 .yt-categories-select {
     border-radius: 18px;
     padding: 8px 15px;
-    border: 1px solid var(--ytd-metadata-line-color, var(--yt-spec-text-secondary));
+    color: #0f0f0f;
+    border-color: rgba(0, 0, 0, 0.1);
     background: transparent;
-    color: var(--ytd-metadata-line-color, var(--yt-spec-text-secondary));
     margin-left: 8px;
 
     & option {
@@ -192,13 +195,16 @@
 }
 
 html[dark] {
-    & #yt-categories {
-        & .button {
-            color: #3ea6ff;
+    .yt-categories-button {
+        color: #3ea6ff;
 
-            &:hover {
-                background-color: #263850;
-            }
+        &:hover {
+            background-color: #263850;
         }
+    }
+
+    .yt-categories-select {
+        color: #f1f1f1;
+        border-color: rgba(255, 255, 255, 0.2);
     }
 }

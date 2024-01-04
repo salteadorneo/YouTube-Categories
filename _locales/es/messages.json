@@ -26,5 +26,9 @@
     "delete_category": {
         "message": "Eliminar categoría",
         "description": "Button to remove a category"
+    },
+    "manage": {
+        "message": "Gestionar",
+        "description": "Button to manage"
     }
 }
