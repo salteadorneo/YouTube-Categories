@@ -1,35 +1,33 @@
-const UNCATEGORIZED = globalThis.chrome.i18n.getMessage('uncategorized')
+async function createHeader ($page) {
+  $page.querySelectorAll('#header .yt-categories-header').forEach((elem) => {
+    elem.remove()
+  })
 
-let interval
-async function init () {
-  let $contents = document.querySelector('#contents')
-
-  while (!$contents) {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    $contents = document.querySelector('#contents')
-  }
-
-  let $container = document.querySelector('#yt-categories')
-  if (!$container) {
-    $container = document.createElement('section')
-    $container.id = 'yt-categories'
-    // add before content
-    $contents.parentNode.insertBefore($container, $contents)
-  }
-  $container.innerHTML = ''
-
-  const titleCategories = document.createElement('div')
-  titleCategories.classList.add('category')
+  const containerHeader = document.createElement('div')
+  containerHeader.classList.add('yt-categories-header')
 
   const chips = document.createElement('section')
   chips.classList.add('chips')
-  titleCategories.appendChild(chips)
+
+  const categories = await globalThis.getCategories()
+  const selectedCategory = await globalThis.getSelectedCategory()
+  if (categories) {
+    Object.keys(categories).forEach((name) => {
+      const newChip = newChipButton(name)
+      chips.appendChild(newChip)
+      if (name === selectedCategory) {
+        newChip.click()
+      }
+    })
+  }
+
+  containerHeader.appendChild(chips)
 
   const containerElement = document.createElement('div')
-  titleCategories.appendChild(containerElement)
+  containerHeader.appendChild(containerElement)
 
   const button = document.createElement('button')
-  button.classList.add('button')
+  button.classList.add('yt-categories-button')
   button.textContent = globalThis.chrome.i18n.getMessage('add_category')
   button.addEventListener('click', () => {
     const name = window.prompt(globalThis.chrome.i18n.getMessage('add_category'))
@@ -38,108 +36,119 @@ async function init () {
   })
   containerElement.appendChild(button)
 
-  $container.appendChild(titleCategories)
-
-  const categories = await globalThis.getCategories()
-  if (categories) {
-    Object.keys(categories).forEach((name) => {
-      createCategorySection({
-        name,
-        channels: categories[name],
-        canDelete: true
-      })
-    })
-  }
-  createCategorySection({ name: UNCATEGORIZED })
-
-  if (interval) clearInterval(interval)
-  interval = setInterval(async () => {
-    const videos = document.querySelectorAll('ytd-rich-item-renderer')
-    if (videos.length) {
-      clearInterval(interval)
-
-      const contentElement = document.querySelector('#contents')
-      const observer = new window.MutationObserver(init)
-      observer.observe(contentElement, { childList: true })
-
-      const videosArray = [...videos]
-      videosArray.forEach(async (video) => {
-        const channelName = video.querySelector('ytd-channel-name a')?.textContent
-        if (!channelName) return
-
-        const videoElement = await extractInfo(video)
-
-        const category = await globalThis.getCategoryChannel(channelName)
-
-        if (!video.querySelector('.yt-categories-category-select')) {
-          const select = await globalThis.createSelectCategory(channelName)
-          select.value = category || ''
-          video.querySelector('#meta').appendChild(select)
-        }
-
-        const section = category
-          ? $container.querySelector(`[data-category-name="${category}"]`)
-          : $container.querySelector(`[data-category-name="${UNCATEGORIZED}"]`)
-
-        section?.querySelector('.empty').classList.add('hidden')
-
-        section?.querySelector('div').appendChild(videoElement)
-
-        $container.classList.remove('loading')
-      })
-    }
-  }, 1000)
+  $page.querySelector('#header').appendChild(containerHeader)
 }
 
-async function createCategorySection ({ name, channels = [], canDelete = false }) {
-  const $container = document.querySelector('#yt-categories')
+async function createVideosContainer ($page) {
+  const exists = $page.querySelector('#yt-categories-videos')
+  if (exists) exists.remove()
 
-  if ($container.querySelector(`[data-category-name="${name}"]`)) return
+  const containerVideos = document.createElement('section')
+  containerVideos.id = 'yt-categories-videos'
 
-  const section = document.createElement('section')
-  section.dataset.categoryName = name
-  section.classList.add('category', 'hidden')
+  const itemsPerRow = $page.querySelector('ytd-rich-grid-row > div')?.childElementCount
+  containerVideos.classList.value = `grid-cols-${itemsPerRow || 4}`
 
-  const emptyDiv = document.createElement('p')
-  emptyDiv.classList.add('empty')
-  emptyDiv.innerHTML = channels.length > 0
-    ? globalThis.chrome.i18n.getMessage('no_recent_videos')
-    : globalThis.chrome.i18n.getMessage('no_channels')
-
-  if (canDelete) {
-    const button = document.createElement('button')
-    button.classList.add('button')
-    button.textContent = globalThis.chrome.i18n.getMessage('delete_category')
-    button.addEventListener('click', () => {
-      if (!window.confirm(globalThis.chrome.i18n.getMessage('are_you_sure'))) return
-      globalThis.removeCategory(name)
-    })
-    emptyDiv.appendChild(button)
+  let $contents = $page.querySelector('#contents')
+  while (!$contents) {
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    $contents = $page.querySelector('#contents')
   }
+  $contents.parentNode.insertBefore(containerVideos, $contents)
+}
 
-  section.appendChild(emptyDiv)
-
-  const itemsPerRow = document.querySelector('ytd-rich-grid-row > div')?.childElementCount
-
-  const div = document.createElement('div')
-  div.classList.add('grid', `grid-cols-${itemsPerRow || 4}`)
-  section.appendChild(div)
-
-  $container.append(section)
-
-  const chips = $container.querySelector('.chips')
-
+function newChipButton (name) {
   const chipButton = document.createElement('button')
   chipButton.classList.add('chip')
   chipButton.textContent = name
-  chipButton.addEventListener('click', () => {
-    handleClickChip(chipButton)
-  })
-  chips.appendChild(chipButton)
+  chipButton.addEventListener('click', handleClickChip)
+  return chipButton
+}
 
+async function handleClickChip (evt) {
+  const sender = evt.target
+
+  const chips = document.querySelectorAll('.chip')
+  chips.forEach((chip) => {
+    chip.classList.remove('active')
+  })
+
+  sender.classList.toggle('active')
+
+  globalThis.setSelectedCategory(sender.textContent)
+}
+
+globalThis.chrome.storage.onChanged.addListener((changes) => {
+  if (changes.selectedCategory) {
+    filterVideos()
+  }
+})
+
+document.addEventListener('yt-navigate-finish', async () => {
+  if (window.location.pathname === '/feed/subscriptions') {
+    init()
+  }
+})
+
+document.addEventListener('DOMContentLoaded', async () => {
+  if (window.location.pathname === '/feed/subscriptions') {
+    init()
+  }
+})
+
+async function init () {
+  let $page = document.querySelector('ytd-browse[page-subtype=subscriptions]')
+
+  while (!$page) {
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    $page = document.querySelector('ytd-browse[page-subtype=subscriptions]')
+  }
+
+  await createHeader($page)
+
+  await createVideosContainer($page)
+
+  await filterVideos()
+}
+
+window.addEventListener('resize', () => {
+  setTimeout(() => {
+    const $containerVideos = document.querySelector('#yt-categories-videos')
+    const itemsPerRow = document.querySelector('ytd-rich-grid-row > div')?.childElementCount
+    $containerVideos.classList.value = `grid-cols-${itemsPerRow || 4}`
+  }, 300)
+})
+
+async function filterVideos () {
   const selectedCategory = await globalThis.getSelectedCategory()
-  if (name === selectedCategory) {
-    handleClickChip(chipButton)
+
+  const $containerVideos = document.querySelector('#yt-categories-videos')
+  $containerVideos.innerHTML = ''
+
+  const channels = await globalThis.getChannelsCategory(selectedCategory)
+
+  if (channels.length === 0 && selectedCategory) {
+    const $noVideos = document.createElement('p')
+    $noVideos.textContent = globalThis.chrome.i18n.getMessage('no_channels')
+    $noVideos.classList.add('empty')
+    $containerVideos.appendChild($noVideos)
+  }
+
+  const $videos = document.querySelectorAll('ytd-rich-item-renderer')
+  if ($videos.length) {
+    const videosArray = [...$videos]
+    videosArray.forEach(async (video) => {
+      const channel = video.querySelector('ytd-channel-name a')?.href.split('/').pop()
+      if (!channel) return
+
+      const $videoElement = await extractInfo(video)
+
+      const category = await globalThis.getCategoryChannel(channel)
+
+      if (channels.length > 0 && selectedCategory && category === selectedCategory) {
+        $containerVideos.appendChild($videoElement)
+      }
+    })
   }
 }
 
@@ -202,51 +211,5 @@ async function extractInfo (video) {
   metaElement.classList.add('meta')
   containerElement.appendChild(metaElement)
 
-  const select = await globalThis.createSelectCategory(channel)
-
-  const category = await globalThis.getCategoryChannel(channel)
-  select.value = category || ''
-  containerElement.appendChild(select)
-
   return videoElement
 }
-
-async function handleClickChip (sender) {
-  if (!sender) return
-
-  const isActive = sender.classList.contains('active')
-
-  const $container = document.querySelector('#yt-categories')
-
-  const sections = $container.querySelectorAll('[data-category-name]')
-  sections.forEach((section) => {
-    section.classList.add('hidden')
-  })
-  const chips = $container.querySelectorAll('.chip')
-  chips.forEach((chip) => {
-    chip.classList.remove('active')
-  })
-
-  const selectedCategory = await globalThis.getSelectedCategory()
-  if (selectedCategory === sender.textContent && isActive) {
-    globalThis.setSelectedCategory(null)
-    $container.classList.remove('loading')
-    return
-  }
-
-  const section = $container.querySelector(`[data-category-name="${sender.textContent}"]`)
-  section.classList.toggle('hidden')
-  sender.classList.toggle('active')
-
-  globalThis.setSelectedCategory(sender.textContent)
-
-  $container.classList.remove('loading')
-}
-
-// document.addEventListener('yt-navigate-start', init)
-
-globalThis.chrome.storage.onChanged.addListener((changes) => {
-  if (changes.categories) init()
-})
-
-init()

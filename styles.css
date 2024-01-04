@@ -1,58 +1,35 @@
-#yt-categories {
-    width: 100%;
+@media (min-width: 3096px) {
+    .yt-categories-header {
+        margin: 0 auto !important;
+    }
+}
 
-    &.loading {
-        opacity: .5;
-        pointer-events: none;
+.yt-categories-header {
+    max-width: 3096px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 24px;
+
+    &>.title {
+        font-size: 2rem;
+        line-height: 2.8rem;
+        font-weight: 700;
+        color: var(--yt-spec-text-primary);
+        padding: 20px 0;
     }
 
-    & * {
-        font-family: "Roboto", "Arial", sans-serif;
-    }
-
-    & .hidden {
-        display: none !important;
-    }
-
-    & .flex {
+    & .empty {
         display: flex;
-    }
-
-    & .grid {
-        display: grid;
-        gap: 16px;
-    }
-
-    & .grid-cols-1 {
-        grid-template-columns: repeat(1, 1fr);
-    }
-
-    & .grid-cols-2 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    & .grid-cols-3 {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    & .grid-cols-4 {
-        grid-template-columns: repeat(4, 1fr);
-    }
-
-    & .grid-cols-5 {
-        grid-template-columns: repeat(5, 1fr);
-    }
-
-    & .grid-cols-6 {
-        grid-template-columns: repeat(6, 1fr);
-    }
-
-    & .grid-cols-7 {
-        grid-template-columns: repeat(7, 1fr);
-    }
-
-    & .grid-cols-8 {
-        grid-template-columns: repeat(8, 1fr);
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        width: 100%;
+        font-size: 1.6rem;
+        line-height: 2.2rem;
+        font-weight: 400;
+        color: var(--ytd-metadata-line-color, var(--yt-spec-text-secondary));
     }
 
     & .chips {
@@ -89,54 +66,64 @@
             }
         }
     }
+}
 
-    & .category {
+.yt-categories-button {
+    font-family: "Roboto", "Arial", sans-serif;
+    font-size: 14px;
+    line-height: 36px;
+    font-weight: 500;
+    border-radius: 18px;
+    color: #065fd4;
+    padding: 0 16px;
+    height: 36px;
+    appearance: none;
+    outline: none;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    white-space: nowrap;
+
+    &:hover {
+        background-color: #def1ff;
+    }
+}
+
+#yt-categories-videos {
+    font-family: "Roboto", "Arial", sans-serif;
+    max-width: calc(var(--ytd-rich-grid-content-max-width) + var(--ytd-rich-grid-item-margin));
+    display: grid;
+    gap: 16px;
+    min-height: 325px;
+    padding-top: 24px;
+    margin: 0 24px;
+
+    & .flex {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin: 0 24px;
-        padding-top: 24px;
-
-        &>.title {
-            font-size: 2rem;
-            line-height: 2.8rem;
-            font-weight: 700;
-            color: var(--yt-spec-text-primary);
-            padding: 20px 0;
-        }
-
-        & .empty {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            width: 100%;
-            font-size: 1.6rem;
-            line-height: 2.2rem;
-            font-weight: 400;
-            color: var(--ytd-metadata-line-color, var(--yt-spec-text-secondary));
-        }
     }
 
-    & .button {
-        font-size: 14px;
-        line-height: 36px;
-        font-weight: 500;
-        border-radius: 18px;
-        color: #065fd4;
-        padding: 0 16px;
-        height: 36px;
-        appearance: none;
-        outline: none;
-        border: none;
-        background-color: transparent;
-        cursor: pointer;
-        white-space: nowrap;
+    &.grid-cols-1 {
+        grid-template-columns: repeat(1, 1fr);
+    }
 
-        &:hover {
-            background-color: #def1ff;
-        }
+    &.grid-cols-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    &.grid-cols-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    &.grid-cols-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    &.grid-cols-5 {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    &.grid-cols-6 {
+        grid-template-columns: repeat(6, 1fr);
     }
 
     & .video {
@@ -190,13 +177,13 @@
     }
 }
 
-.yt-categories-category-select {
-    border-radius: 16px;
-    padding: 4px 6px;
+.yt-categories-select {
+    border-radius: 18px;
+    padding: 8px 15px;
     border: 1px solid var(--ytd-metadata-line-color, var(--yt-spec-text-secondary));
     background: transparent;
     color: var(--ytd-metadata-line-color, var(--yt-spec-text-secondary));
-    margin: 6px 0;
+    margin-left: 8px;
 
     & option {
         background: transparent;

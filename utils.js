@@ -1,31 +1,3 @@
-globalThis.createSelectCategory = async (channel) => {
-  const select = document.createElement('select')
-  select.classList.add('yt-categories-category-select')
-
-  const option = document.createElement('option')
-  option.value = ''
-  option.textContent = globalThis.chrome.i18n.getMessage('uncategorized')
-  select.appendChild(option)
-
-  const categories = await globalThis.getCategories()
-  if (categories) {
-    Object.keys(categories).forEach((category) => {
-      const option = document.createElement('option')
-      option.value = category
-      option.textContent = category
-      select.appendChild(option)
-    })
-  }
-
-  select.onclick = (event) => event.stopPropagation()
-  select.addEventListener('change', (event) => {
-    const category = event.target.value
-    globalThis.setChannelToCategory({ channel, category })
-  })
-
-  return select
-}
-
 globalThis.createCategory = async ({ name }) => {
   const categories = await globalThis.getCategories()
   categories[name] = []
@@ -48,10 +20,9 @@ globalThis.getCategoryChannel = async (channel) => {
 }
 
 globalThis.setChannelToCategory = async ({ channel, category }) => {
-  const $container = document.querySelector('#yt-categories')
-  $container.classList.add('loading')
-
   const categories = await globalThis.getCategories()
+
+  if (!categories) return
 
   // remove from other categories
   Object.keys(categories).forEach((categoryName) => {

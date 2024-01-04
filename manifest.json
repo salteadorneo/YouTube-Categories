@@ -19,7 +19,7 @@
     "content_scripts": [
         {
             "matches": [
-                "*://*.youtube.com/feed/subscriptions"
+                "*://*.youtube.com/*"
             ],
             "css": [
                 "styles.css"
@@ -27,7 +27,8 @@
             "js": [
                 "utils.js",
                 "storage.js",
-                "subscriptions.js"
+                "subscriptions.js",
+                "channel.js"
             ]
         }
     ]
