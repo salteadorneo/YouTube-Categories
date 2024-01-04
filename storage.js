@@ -7,6 +7,11 @@ globalThis.getCategories = async () => {
   return storage?.categories || {}
 }
 
+globalThis.getChannelsCategory = async (category) => {
+  const categories = await globalThis.getCategories()
+  return categories[category] || []
+}
+
 globalThis.setSelectedCategory = async (name) => {
   await globalThis.chrome.storage.local.set({ selectedCategory: name })
 }
