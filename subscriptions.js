@@ -138,7 +138,7 @@ async function filterVideos () {
     $containerVideos.appendChild(emptyHtml())
   }
 
-  const $videos = document.querySelectorAll('ytd-rich-item-renderer')
+  const $videos = document.querySelectorAll('ytd-rich-item-renderer, ytd-video-renderer')
   if ($videos.length) {
     const videosArray = [...$videos]
     videosArray.forEach(async (video) => {
@@ -186,7 +186,7 @@ function emptyHtml () {
 }
 
 async function extractInfo (video) {
-  const link = video.querySelector('#video-title-link')?.href
+  const link = video.querySelector('a')?.href
   const id = link.match(/v=(.+?)(?:&|$)/)[1]
   const title = video.querySelector('#video-title')?.textContent
   const image = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`
