@@ -28,7 +28,7 @@
                 "utils.js",
                 "storage.js",
                 "subscriptions.js",
-                "channel.js"
+                "channels.js"
             ]
         }
     ]

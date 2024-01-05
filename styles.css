@@ -208,3 +208,8 @@ html[dark] {
         border-color: rgba(255, 255, 255, 0.2);
     }
 }
+
+ytd-channel-renderer:not([dual-buttons]) #buttons.ytd-channel-renderer {
+    flex-direction: column !important;
+    justify-content: center !important;
+}
