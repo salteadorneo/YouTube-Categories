@@ -28,7 +28,8 @@
                 "utils.js",
                 "storage.js",
                 "subscriptions.js",
-                "channels.js"
+                "channels.js",
+                "watch.js"
             ]
         }
     ]

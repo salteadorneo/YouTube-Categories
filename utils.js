@@ -38,3 +38,34 @@ globalThis.setChannelToCategory = async ({ channel, category }) => {
   categories[category].push(channel)
   await globalThis.setCategories(categories)
 }
+
+globalThis.getSelect = async ({ channel }) => {
+  const category = await globalThis.getCategoryChannel(channel)
+
+  const select = document.createElement('select')
+  select.classList.add('yt-categories-select')
+  select.addEventListener('change', async (evt) => {
+    const category = evt.target.value
+    await globalThis.setChannelToCategory({ channel, category })
+  })
+
+  const categories = await globalThis.getCategories()
+
+  const option = document.createElement('option')
+  option.value = ''
+  option.textContent = globalThis.chrome.i18n.getMessage('uncategorized')
+  option.selected = !category
+  select.appendChild(option)
+
+  if (categories) {
+    Object.keys(categories).forEach((name) => {
+      const option = document.createElement('option')
+      option.value = name
+      option.textContent = name
+      option.selected = category === name
+      select.appendChild(option)
+    })
+  }
+
+  return select
+}

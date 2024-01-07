@@ -1,6 +1,4 @@
 document.addEventListener('yt-navigate-finish', async () => {
-  console.log('yt-navigate-finish', window.location.pathname)
-
   renderSelectOnChannel()
 })
 
@@ -15,7 +13,7 @@ function renderSelectOnChannel () {
       elem.remove()
     })
 
-    const select = await getSelect({ channel })
+    const select = await globalThis.getSelect({ channel })
 
     $channel.querySelector('#inner-header-container #buttons')?.appendChild(select)
   })
@@ -30,39 +28,8 @@ function renderSelectOnChannel () {
       elem.remove()
     })
 
-    const select = await getSelect({ channel })
+    const select = await globalThis.getSelect({ channel })
 
     $channel.querySelector('#buttons')?.appendChild(select)
   })
-}
-
-async function getSelect ({ channel }) {
-  const category = await globalThis.getCategoryChannel(channel)
-
-  const select = document.createElement('select')
-  select.classList.add('yt-categories-select')
-  select.addEventListener('change', async (evt) => {
-    const category = evt.target.value
-    await globalThis.setChannelToCategory({ channel, category })
-  })
-
-  const categories = await globalThis.getCategories()
-
-  const option = document.createElement('option')
-  option.value = ''
-  option.textContent = globalThis.chrome.i18n.getMessage('uncategorized')
-  option.selected = !category
-  select.appendChild(option)
-
-  if (categories) {
-    Object.keys(categories).forEach((name) => {
-      const option = document.createElement('option')
-      option.value = name
-      option.textContent = name
-      option.selected = category === name
-      select.appendChild(option)
-    })
-  }
-
-  return select
 }
