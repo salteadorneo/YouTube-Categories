@@ -154,7 +154,7 @@ async function filterVideos () {
 
       if (channels.length > 0 && selectedCategory && category === selectedCategory) {
         const id = $videoElement.dataset.id
-        const exists = $containerVideos.querySelector(`.video[data-id=${id}]`)
+        const exists = $containerVideos.querySelector(`.video[data-id=v${id}]`)
         if (!exists) {
           $containerVideos.appendChild($videoElement)
         }
@@ -199,12 +199,12 @@ async function extractInfo (video) {
   const image = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`
   const channel = video.querySelector('ytd-channel-name a')?.textContent
   const channelLink = video.querySelector('ytd-channel-name a')?.href
-  const avatar = video.querySelector('#avatar-link img')?.src
+  const avatar = video.querySelector('yt-avatar-shape img')?.src
   const metas = video.querySelectorAll('#metadata-line span')
 
   const videoElement = document.createElement('div')
   videoElement.classList.add('video')
-  videoElement.dataset.id = id
+  videoElement.dataset.id = `v${id}`
   videoElement.dataset.channel = channel
 
   const anchor = document.createElement('a')
@@ -227,6 +227,9 @@ async function extractInfo (video) {
   const avatarElement = document.createElement('img')
   avatarElement.src = avatar
   avatarElement.classList.add('avatar')
+  avatarElement.onerror = () => {
+    avatarElement.src = 'https://placehold.co/36x36?text=YT'
+  }
   containerImageElement.appendChild(avatarElement)
 
   const containerElement = document.createElement('div')
