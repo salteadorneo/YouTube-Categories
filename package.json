@@ -10,7 +10,7 @@
     "categories"
   ],
   "author": "salteadorneodev",
-  "license": "ISC",
+  "license": "BSD-3-Clause",
   "devDependencies": {
     "standard": "17.1.2"
   },
