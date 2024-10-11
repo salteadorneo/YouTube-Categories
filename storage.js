@@ -1,6 +1,7 @@
 globalThis.categories = null
 
 globalThis.setCategories = async (categories) => {
+  globalThis.categories = categories // cache
   await globalThis.chrome.storage.sync.set({ categories })
 }
 
