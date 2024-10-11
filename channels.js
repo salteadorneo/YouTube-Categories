@@ -6,7 +6,7 @@ renderSelectOnChannel()
 
 function renderSelectOnChannel () {
   document.querySelectorAll('ytd-browse[page-subtype=channels]').forEach(async ($channel) => {
-    const channel = $channel.querySelector('#channel-handle')?.textContent
+    const channel = window.location.pathname.split('/').pop()
     if (!channel) return
 
     $channel.querySelectorAll('.yt-categories-select').forEach((elem) => {
@@ -15,7 +15,7 @@ function renderSelectOnChannel () {
 
     const select = await globalThis.getSelect({ channel })
 
-    $channel.querySelector('#inner-header-container #buttons')?.appendChild(select)
+    $channel.querySelector('yt-flexible-actions-view-model')?.appendChild(select)
   })
 
   if (!window.location.pathname.startsWith('/feed/channels')) return
