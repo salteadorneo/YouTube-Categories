@@ -98,6 +98,8 @@ document.addEventListener('yt-navigate-finish', () => {
   }
 })
 
+globalThis.videosLength = 0
+
 async function init () {
   let $page = document.querySelector('ytd-browse[page-subtype=subscriptions]')
 
@@ -111,6 +113,16 @@ async function init () {
   await createVideosContainer($page)
 
   await filterVideos()
+
+  const observer = new globalThis.MutationObserver(() => {
+    const $videos = document.querySelectorAll('ytd-rich-item-renderer, ytd-video-renderer')
+
+    if ($videos.length === globalThis.videosLength) return
+    globalThis.videosLength = $videos.length
+
+    filterVideos()
+  })
+  observer.observe(document.querySelector('#contents'), { childList: true, subtree: false })
 }
 
 window.addEventListener('resize', () => {
@@ -127,6 +139,8 @@ async function filterVideos () {
 
   const $containerVideos = document.querySelector('#yt-categories-videos')
   $containerVideos.innerHTML = ''
+
+  if (!selectedCategory) return
 
   const itemsPerRow = document.querySelector('ytd-rich-grid-row > div')?.childElementCount
   $containerVideos.classList.value = `grid grid-cols-${itemsPerRow || 4}`
@@ -153,6 +167,8 @@ async function filterVideos () {
       const category = await globalThis.getCategoryChannel(channel)
 
       if (channels.length > 0 && selectedCategory && category === selectedCategory) {
+        video.style.display = 'none'
+
         const id = $videoElement.dataset.id
         const exists = $containerVideos.querySelector(`.video[data-id=v${id}]`)
         if (!exists) {
@@ -160,6 +176,15 @@ async function filterVideos () {
         }
       }
     })
+    setTimeout(() => {
+      if ($containerVideos.querySelectorAll('.video').length === 0) {
+        const exists = $containerVideos.querySelector('.empty')
+        if (!exists) {
+          $containerVideos.classList.value = ''
+          $containerVideos.appendChild(noVideos())
+        }
+      }
+    }, 100)
   }
 }
 
@@ -177,6 +202,25 @@ function emptyHtml () {
   manageButton.textContent = globalThis.chrome.i18n.getMessage('manage')
   container.appendChild(manageButton)
 
+  container.appendChild(removeButton())
+
+  return container
+}
+
+function noVideos () {
+  const container = document.createElement('div')
+  container.classList.add('empty')
+
+  const p = document.createElement('p')
+  p.textContent = globalThis.chrome.i18n.getMessage('novideos')
+  container.appendChild(p)
+
+  container.appendChild(removeButton())
+
+  return container
+}
+
+function removeButton () {
   const removeButton = document.createElement('button')
   removeButton.classList.add('yt-categories-button')
   removeButton.textContent = globalThis.chrome.i18n.getMessage('delete_category')
@@ -184,12 +228,9 @@ function emptyHtml () {
     const selectedCategory = await globalThis.getSelectedCategory()
     const confirm = window.confirm(globalThis.chrome.i18n.getMessage('are_you_sure', [selectedCategory]))
     if (!confirm) return
-
     globalThis.removeCategory(selectedCategory)
   })
-  container.appendChild(removeButton)
-
-  return container
+  return removeButton
 }
 
 async function extractInfo (video) {
@@ -213,6 +254,7 @@ async function extractInfo (video) {
   const imageElement = document.createElement('img')
   imageElement.src = image
   imageElement.alt = title
+  imageElement.loading = 'lazy'
 
   anchor.appendChild(imageElement)
   videoElement.appendChild(anchor)
@@ -227,6 +269,7 @@ async function extractInfo (video) {
   const avatarElement = document.createElement('img')
   avatarElement.src = avatar
   avatarElement.classList.add('avatar')
+  avatarElement.loading = 'lazy'
   avatarElement.onerror = () => {
     avatarElement.src = 'https://placehold.co/36x36?text=YT'
   }
