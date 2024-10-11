@@ -1,9 +1,15 @@
+globalThis.categories = null
+
 globalThis.setCategories = async (categories) => {
   await globalThis.chrome.storage.sync.set({ categories })
 }
 
 globalThis.getCategories = async () => {
+  if (globalThis.categories) { // cache
+    return globalThis.categories
+  }
   const storage = await globalThis.chrome.storage.sync.get('categories')
+  globalThis.categories = storage?.categories || {} // cache
   return storage?.categories || {}
 }
 
