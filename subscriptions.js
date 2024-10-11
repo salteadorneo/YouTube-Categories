@@ -167,8 +167,6 @@ async function filterVideos () {
       const category = await globalThis.getCategoryChannel(channel)
 
       if (channels.length > 0 && selectedCategory && category === selectedCategory) {
-        video.style.display = 'none'
-
         const id = $videoElement.dataset.id
         const exists = $containerVideos.querySelector(`.video[data-id=v${id}]`)
         if (!exists) {
@@ -247,6 +245,8 @@ async function extractInfo (video) {
   videoElement.classList.add('video')
   videoElement.dataset.id = `v${id}`
   videoElement.dataset.channel = channel
+
+  videoElement.style.width = document.querySelector('ytd-rich-item-renderer')?.offsetWidth + 'px'
 
   const anchor = document.createElement('a')
   anchor.href = link

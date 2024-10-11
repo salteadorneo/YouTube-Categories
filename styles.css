@@ -72,42 +72,17 @@
 
 #yt-categories-videos {
     font-family: "Roboto", "Arial", sans-serif;
+    width: calc(100% - 44px);
     max-width: calc(var(--ytd-rich-grid-content-max-width) + var(--ytd-rich-grid-item-margin));
-    gap: 16px;
-    min-height: 356px;
     padding-top: 24px;
-    margin: 0 24px;
+    margin: 0 22px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 16px;
 
     & .flex {
         display: flex;
-    }
-
-    &.grid {
-        display: grid;
-    }
-
-    &.grid-cols-1 {
-        grid-template-columns: repeat(1, 1fr);
-    }
-
-    &.grid-cols-2 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    &.grid-cols-3 {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    &.grid-cols-4 {
-        grid-template-columns: repeat(4, 1fr);
-    }
-
-    &.grid-cols-5 {
-        grid-template-columns: repeat(5, 1fr);
-    }
-
-    &.grid-cols-6 {
-        grid-template-columns: repeat(6, 1fr);
     }
 
     & .empty {
@@ -128,7 +103,7 @@
     }
 
     & .video {
-        margin-bottom: 40px;
+        margin-bottom: 10px;
 
         .flex {
             margin-top: 12px;
