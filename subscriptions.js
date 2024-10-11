@@ -267,13 +267,16 @@ async function extractInfo (video) {
   flexElement.appendChild(containerImageElement)
 
   const avatarElement = document.createElement('img')
+  const avatarLinkElement = document.createElement('a')
+  avatarLinkElement.href = channelLink
   avatarElement.src = avatar
   avatarElement.classList.add('avatar')
   avatarElement.loading = 'lazy'
   avatarElement.onerror = () => {
     avatarElement.src = 'https://placehold.co/36x36?text=YT'
   }
-  containerImageElement.appendChild(avatarElement)
+  avatarLinkElement.appendChild(avatarElement)
+  containerImageElement.appendChild(avatarLinkElement)
 
   const containerElement = document.createElement('div')
   flexElement.appendChild(containerElement)
