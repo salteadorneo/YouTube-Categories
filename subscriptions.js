@@ -135,7 +135,10 @@ async function filterVideos () {
 
   if (channels.length === 0 && selectedCategory) {
     $containerVideos.classList.value = ''
-    $containerVideos.appendChild(emptyHtml())
+    const exists = $containerVideos.querySelector('.empty')
+    if (!exists) {
+      $containerVideos.appendChild(emptyHtml())
+    }
   }
 
   const $videos = document.querySelectorAll('ytd-rich-item-renderer, ytd-video-renderer')
@@ -150,7 +153,11 @@ async function filterVideos () {
       const category = await globalThis.getCategoryChannel(channel)
 
       if (channels.length > 0 && selectedCategory && category === selectedCategory) {
-        $containerVideos.appendChild($videoElement)
+        const id = $videoElement.dataset.id
+        const exists = $containerVideos.querySelector(`.video[data-id=${id}]`)
+        if (!exists) {
+          $containerVideos.appendChild($videoElement)
+        }
       }
     })
   }
@@ -187,7 +194,7 @@ function emptyHtml () {
 
 async function extractInfo (video) {
   const link = video.querySelector('a')?.href
-  const id = link.match(/v=(.+?)(?:&|$)/)[1]
+  const id = link.match(/v=(.+?)(?:&|$)/)?.[1]
   const title = video.querySelector('#video-title')?.textContent
   const image = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`
   const channel = video.querySelector('ytd-channel-name a')?.textContent
@@ -197,6 +204,8 @@ async function extractInfo (video) {
 
   const videoElement = document.createElement('div')
   videoElement.classList.add('video')
+  videoElement.dataset.id = id
+  videoElement.dataset.channel = channel
 
   const anchor = document.createElement('a')
   anchor.href = link
