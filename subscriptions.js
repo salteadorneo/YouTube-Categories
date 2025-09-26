@@ -165,7 +165,7 @@ async function filterVideos () {
   if ($videos.length) {
     const videosArray = [...$videos]
     videosArray.forEach(async (video) => {
-      const channel = video.querySelector('ytd-channel-name a')?.href.split('/').pop()
+      const channel = video.querySelector('yt-content-metadata-view-model a')?.href.split('/').pop()
       if (!channel) return
 
       const $videoElement = await extractInfo(video)
@@ -240,10 +240,10 @@ function removeButton () {
 async function extractInfo (video) {
   const link = video.querySelector('a')?.href
   const id = link.match(/v=(.+?)(?:&|$)/)?.[1]
-  const title = video.querySelector('#video-title')?.textContent
+  const title = video.querySelector('h3')?.textContent
   const image = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`
-  const channel = video.querySelector('ytd-channel-name a')?.textContent
-  const channelLink = video.querySelector('ytd-channel-name a')?.href
+  const channel = video.querySelector('yt-content-metadata-view-model a')?.textContent
+  const channelLink = video.querySelector('yt-content-metadata-view-model a')?.href
   const avatar = video.querySelector('yt-avatar-shape img')?.src
   const metas = video.querySelectorAll('#metadata-line span')
 
