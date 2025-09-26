@@ -1,4 +1,8 @@
 {
+    "all": {
+        "message": "All",
+        "description": "Button to show all videos"
+    },
     "default_categories": {
         "message": "Music,News,Podcasts,Sports,Gaming",
         "description": "Default categories"

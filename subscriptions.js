@@ -10,6 +10,9 @@ async function createHeader ($page) {
   const chips = document.createElement('section')
   chips.classList.add('chips')
 
+  const allChip = newChipButton(globalThis.chrome.i18n.getMessage('all'))
+  chips.appendChild(allChip)
+
   const categories = await globalThis.getCategories()
   const selectedCategory = await globalThis.getSelectedCategory()
   if (categories) {
@@ -20,6 +23,9 @@ async function createHeader ($page) {
         newChip.click()
       }
     })
+  }
+  if (!selectedCategory) {
+    allChip.click()
   }
 
   // chip for create new category
@@ -76,7 +82,7 @@ async function handleClickChip (evt) {
 
   sender.classList.toggle('active')
 
-  globalThis.setSelectedCategory(sender.textContent)
+  globalThis.setSelectedCategory(sender.textContent === globalThis.chrome.i18n.getMessage('all') ? null : sender.textContent)
 }
 
 globalThis.chrome.storage.onChanged.addListener((changes) => {
