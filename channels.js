@@ -21,7 +21,7 @@ function renderSelectOnChannel () {
   if (!window.location.pathname.startsWith('/feed/channels')) return
 
   document.querySelectorAll('ytd-browse ytd-channel-renderer').forEach(async ($channel) => {
-    const channel = $channel.querySelector('#subscribers')?.textContent
+    const channel = $channel.querySelector('a#channel-title')?.href.split('/').pop()
     if (!channel) return
 
     $channel.querySelectorAll('.yt-categories-select').forEach((elem) => {
